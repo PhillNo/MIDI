@@ -10,30 +10,26 @@
 
 using namespace std;
 
-int main()
+int main(int argc, char **argv)
 {
-  string file_in = "MIDI_files/MIDI_w_junk_MThd.mid";
-  /*
-  string path2file = "MIDI_files/extended_MThd.mid";
-  string path2file = "MIDI_files/escape_sysex.mid";
-  string path2file = "MIDI_files/bad_sysex.mid";
-  string path2file = "MIDI_files/basic_sysex.mid";
-  string path2file = "MIDI_files/sample_UNkn_chunks.mid";
-  string path2file = "MIDI_files/MIDI_sample.mid";
-  string path2file = "MIDI_files/no_track.mid";
-  */
-  char file_out[] = "MIDI_Files/encoded.mid";
+  if (argc < 3)
+  {
+    return 1;
+  }
 
-  streampos size;
-  unique_ptr<char[]> mid_contents;
-  ifstream file_reader (file_in, ios::in|ios::binary|ios::ate);
-  ofstream file_writer;
+  char const* file_in  = argv[1];
+  char const* file_out = argv[2];
 
   uint8_t curr_byte{};
-  MIDI_File_Decoder dec;
-  MIDI_File decoded;
-  MIDI_File_Encoder enc;
+  MIDI_File_Decoder dec{};
+  MIDI_File decoded{};
+  MIDI_File_Encoder enc{};
   vector<uint8_t> encoded{};
+
+  streampos size{};
+  unique_ptr<char[]> midi_contents;
+  ofstream file_writer{};
+  ifstream file_reader (file_in, ios::in|ios::binary|ios::ate);
   
   /****************************************
   Read the input .mid file
@@ -41,15 +37,15 @@ int main()
   if (file_reader.is_open())
   {
     size = file_reader.tellg();
-    mid_contents = unique_ptr<char[]>(new char[size]);
+    midi_contents = unique_ptr<char[]>(new char[size]);
     file_reader.seekg(0, ios::beg);
-    file_reader.read(mid_contents.get(), size);
+    file_reader.read(midi_contents.get(), size);
     file_reader.close();
   }
   else
   {
-    cout << "file failed to open." << endl;
-    return 0;
+    cout << "file failed to open .mid file ";
+    return 1;
   }
 
   /****************************************
@@ -57,7 +53,7 @@ int main()
   ****************************************/
   for (int i = 0; i < size; ++i)
   {
-    curr_byte = (uint8_t)(mid_contents[i]);
+    curr_byte = (uint8_t)(midi_contents[i]);
     
     MIDI_Element_Decoder::STATUS parse_status = dec.decode_byte(curr_byte, &decoded);
     while ((parse_status != MIDI_Element_Decoder::STATUS::STANDBY) && (parse_status != MIDI_Element_Decoder::STATUS::FAIL))
@@ -78,11 +74,11 @@ int main()
   
   for (int i = 0; i < size; ++i)
   {
-    if (encoded[i] != (uint8_t)( mid_contents[i] ))
+    if (encoded[i] != (uint8_t)( midi_contents[i] ))
     {
-      cout << "diff at: " << i << endl;
-      cout << (char)encoded[i] << ", " << (char)( mid_contents[i] ) << endl;
-      break;
+      cout << "diff at: " << i << " ";
+      //cout << (char)encoded[i] << ", " << (char)( midi_contents[i] ) << endl;
+      return 1;
     }
   }
   
@@ -92,7 +88,7 @@ int main()
   file_writer.open(file_out,ios::out | ios :: binary );
   file_writer.write((char*)&(encoded[0]), encoded.size());
   
-  cout << "done" << endl;
+  cout << "pass" << endl;
   
   return 0;
 

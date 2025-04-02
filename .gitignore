@@ -1,1 +1,7 @@
 .vscode
+extras/test.txt
+extras/main
+extras/main_clang
+extras/tests.txt
+extras/MIDI_files/encoded.mid
+extras/encoded_files/
