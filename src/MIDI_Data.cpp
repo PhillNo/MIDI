@@ -179,36 +179,6 @@ uint8_t UNkn_Chunk::operator[](size_t index)
 /* ****************************************************************************
 *  MIDI_File
 *  ************************************************************************* */
-uint16_t MIDI_File::get_fmt()
-{
-    return header.get_fmt();
-}
-
-uint16_t MIDI_File::get_ntrks()
-{
-    return header.get_ntrks();
-}
-
-uint16_t MIDI_File::get_div()
-{
-    return header.get_div();
-}
-
-void MIDI_File::set_fmt(uint16_t new_fmt)
-{
-    header.set_fmt(new_fmt);
-}
-
-void MIDI_File::set_ntrks(uint16_t new_ntrks)
-{
-    header.set_ntrks(new_ntrks);
-}
-
-void MIDI_File::set_div(uint16_t new_div)
-{
-    header.set_div(new_div);
-}
-
 void MIDI_File::emplace_mtrk()
 {
     mtrk_chunks.emplace_back();

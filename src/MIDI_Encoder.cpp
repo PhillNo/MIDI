@@ -932,7 +932,7 @@ MIDI_Element_Encoder::STATUS MIDI_File_Encoder::encode_byte(uint8_t& product)
                 }
                 case STATUS::SUCCESS:
                 {
-                    if (src_file->get_ntrks() > 0)
+                    if (src_file->get_hdr().get_ntrks() > 0)
                     {
                         current_state = STATE::CHUNK_TYPE;
                         break;
@@ -954,7 +954,7 @@ MIDI_Element_Encoder::STATUS MIDI_File_Encoder::encode_byte(uint8_t& product)
         }
         case STATE::CHUNK_TYPE:
         {
-            if (chunk_index >= src_file->get_ntrks())
+            if (chunk_index >= src_file->get_hdr().get_ntrks())
             {
                 current_state = STATE::FAIL;
                 return STATUS::FAIL;
@@ -989,12 +989,12 @@ MIDI_Element_Encoder::STATUS MIDI_File_Encoder::encode_byte(uint8_t& product)
                 }
                 case STATUS::SUCCESS:
                 {
-                    if (chunk_index == (src_file->get_ntrks()))
+                    if (chunk_index == (src_file->get_hdr().get_ntrks()))
                     {
                         current_state = STATE::DONE;
                         return STATUS::SUCCESS;
                     }
-                    else if (chunk_index > (src_file->get_ntrks()))
+                    else if (chunk_index > (src_file->get_hdr().get_ntrks()))
                     {
                         current_state = STATE::FAIL;
                         return STATUS::FAIL;
@@ -1023,12 +1023,12 @@ MIDI_Element_Encoder::STATUS MIDI_File_Encoder::encode_byte(uint8_t& product)
                 }
                 case STATUS::SUCCESS:
                 {
-                    if (chunk_index == (src_file->get_ntrks()))
+                    if (chunk_index == (src_file->get_hdr().get_ntrks()))
                     {
                         current_state = STATE::DONE;
                         return STATUS::SUCCESS;
                     }
-                    else if (chunk_index > (src_file->get_ntrks()))
+                    else if (chunk_index > (src_file->get_hdr().get_ntrks()))
                     {
                         current_state = STATE::FAIL;
                         return STATUS::FAIL;

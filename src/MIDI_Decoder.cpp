@@ -1334,7 +1334,7 @@ MIDI_Element_Decoder::STATUS MIDI_File_Decoder::decode_byte(uint8_t next_byte, M
                 }
                 case STATUS::SUCCESS:
                 {
-                    if (product.get_ntrks() > 0)
+                    if (product.get_hdr().get_ntrks() > 0)
                     {
                         current_state = STATE::CHUNK_TYPE;
                         chunk_type_decoder.clear();
@@ -1366,7 +1366,7 @@ MIDI_Element_Decoder::STATUS MIDI_File_Decoder::decode_byte(uint8_t next_byte, M
                 }
                 case STATUS::SUCCESS:
                 {
-                    if ((uint16_t)track_index < (product.get_ntrks() - 1))
+                    if ((uint16_t)track_index < (product.get_hdr().get_ntrks() - 1))
                     {
                         current_state = STATE::CHUNK_TYPE;
                         chunk_type_decoder.clear();
@@ -1400,7 +1400,7 @@ MIDI_Element_Decoder::STATUS MIDI_File_Decoder::decode_byte(uint8_t next_byte, M
                 }
                 case STATUS::SUCCESS:
                 {
-                    if ((uint16_t)track_index < (product.get_ntrks() - 1))
+                    if ((uint16_t)track_index < (product.get_hdr().get_ntrks() - 1))
                     {
                         current_state = STATE::CHUNK_TYPE;
                         chunk_type_decoder.clear();

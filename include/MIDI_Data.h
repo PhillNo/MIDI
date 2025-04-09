@@ -179,18 +179,25 @@ public:
 *  ************************************************************************* */
 class MIDI_File :                           public MIDI_Element
 {
+/*
+A class representing a MIDI file.
+
+Because the structure of MTrk and UNkn chunks is different, as well as the operations
+that can be performed against them, they are stored in separate containers.
+
+A master container stores all `MIDI_Chunk`s in a vector, implicitly tracking order.
+Adding chunks to this container is a necessary side effect any time a new MTrk
+or UNkn chunk is emplaced. The containers are therefore `protected` to ensure
+the proper side effects take place, while references to elements in the containers
+are still exposed through getters.
+*/
+
 protected:
                     MThd_Chunk              header{};
                     std::vector<MIDI_Chunk*> ordered_chunks{}; // pointers in vector cannot be comst because vector copies
                     std::list<MTrk_Chunk>   mtrk_chunks{};
                     std::list<UNkn_Chunk>   unkn_chunks{};
 public:
-                    uint16_t                get_fmt();
-                    uint16_t                get_ntrks();
-                    uint16_t                get_div();    
-                    void                    set_fmt(uint16_t new_fmt);
-                    void                    set_ntrks(uint16_t new_ntrks);
-                    void                    set_div(uint16_t new_div);
                     void                    emplace_mtrk();
                     void                    emplace_unkn();
                     MThd_Chunk&             get_hdr();
