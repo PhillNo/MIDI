@@ -111,7 +111,6 @@ public:
                     void                    set_len(uint32_t new_len);
 };
 
-
 /* ****************************************************************************
 *  MThd_Chunk
 *  ************************************************************************* */
@@ -167,10 +166,7 @@ public:
                                             UNkn_Chunk();
 
                     void                    set_len(uint32_t new_len);
-                    void                    push_bytes(uint8_t next_byte);
-                    uint8_t&                back();
-                    uint8_t&                front();
-                    std::vector<uint8_t>::iterator begin();
+                    void                    push_byte(uint8_t next_byte);
                     uint8_t                 operator[](size_t index);
 };
 
@@ -193,14 +189,29 @@ are still exposed through getters.
 */
 
 protected:
-                    MThd_Chunk              header{};
-                    std::vector<MIDI_Chunk*> ordered_chunks{}; // pointers in vector cannot be comst because vector copies
-                    std::list<MTrk_Chunk>   mtrk_chunks{};
-                    std::list<UNkn_Chunk>   unkn_chunks{};
+                    MThd_Chunk              hdr{};
+                    std::list<MIDI_Chunk*>  ordered_chunks{}; // pointers in vector cannot be const because vectors copy
+                    std::list<MTrk_Chunk>   mtrk_chunks{}; // could be vectors but pushing back
+                    std::list<UNkn_Chunk>   unkn_chunks{}; // can cause moves and pointers in `ordered_chunks` would need to be reset.
 public:
-                    void                    emplace_mtrk();
-                    void                    emplace_unkn();
+                    /*
+                    Functions for inserting & removing tracks will not automatically update header
+                    `MIDI_Decoder` utilizes these functions to create a MIDI file.
+                    If after emplacing the first chunk the size of `hdr::ntrks` is set to 1,
+                    the decoder will no longer know how many more tracks to anticipate.
+                    */
+                    MTrk_Chunk&             emplace_back_mtrk();
+                    MTrk_Chunk&             emplace_mtrk(size_t absolute_index);
+                    MTrk_Chunk&             insert_mtrk(size_t absolute_index, const MTrk_Chunk& new_chunk);
+                    
+                    UNkn_Chunk&             emplace_back_unkn();
+                    UNkn_Chunk&             emplace_unkn(size_t absolute_index);
+                    UNkn_Chunk&             insert_unkn(size_t absolute_index, const UNkn_Chunk& new_chunk);
+                    
+                    void                    erase(size_t absolute_index);
+                    
                     MThd_Chunk&             get_hdr();
+                    MIDI_Chunk&             get_chunk(size_t index);
                     MIDI_Chunk&             operator[](size_t index);
 };
 

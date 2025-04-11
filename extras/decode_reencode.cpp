@@ -2,7 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <iterator>
-#include <memory>
+#include <vector>
 
 #include "MIDI_Data.h"
 #include "MIDI_Decoder.h"
@@ -27,7 +27,7 @@ int main(int argc, char **argv)
   vector<uint8_t> encoded{};
 
   streampos size{};
-  unique_ptr<char[]> midi_contents;
+  std::vector<uint8_t> midi_contents{};
   ofstream file_writer{};
   ifstream file_reader (file_in, ios::in|ios::binary|ios::ate);
   
@@ -37,14 +37,14 @@ int main(int argc, char **argv)
   if (file_reader.is_open())
   {
     size = file_reader.tellg();
-    midi_contents = unique_ptr<char[]>(new char[size]);
+    midi_contents.resize(size);
     file_reader.seekg(0, ios::beg);
-    file_reader.read(midi_contents.get(), size);
+    file_reader.read((char*)midi_contents.data(), size);
     file_reader.close();
   }
   else
   {
-    cout << "file failed to open .mid file ";
+    cout << "file_failed_to_open_.mid_file " << endl;
     return 1;
   }
 
@@ -76,7 +76,7 @@ int main(int argc, char **argv)
   {
     if (encoded[i] != (uint8_t)( midi_contents[i] ))
     {
-      cout << "diff at: " << i << " ";
+      cout << "diff_at: " << i << " " << endl;
       //cout << (char)encoded[i] << ", " << (char)( midi_contents[i] ) << endl;
       return 1;
     }
@@ -88,7 +88,7 @@ int main(int argc, char **argv)
   file_writer.open(file_out,ios::out | ios :: binary );
   file_writer.write((char*)&(encoded[0]), encoded.size());
   
-  cout << "pass" << endl;
+  cout << "complete" << endl;
   
   return 0;
 

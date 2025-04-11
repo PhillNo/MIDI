@@ -960,17 +960,17 @@ MIDI_Element_Encoder::STATUS MIDI_File_Encoder::encode_byte(uint8_t& product)
                 return STATUS::FAIL;
             }
             
-            if ( (*src_file)[chunk_index].get_header() == CHUNK_HEADER::MTRK)
+            if ( (*src_file).get_chunk(chunk_index).get_header() == CHUNK_HEADER::MTRK)
             {
                 current_state = STATE::MTRK;
                 mtrk_encoder.clear();
-                mtrk_encoder.set_data(&((*src_file)[chunk_index]));
+                mtrk_encoder.set_data(&((*src_file).get_chunk(chunk_index)));
             }
             else
             {
                 current_state = STATE::UNKN;
                 unkn_encoder.clear();
-                unkn_encoder.set_data(&((*src_file)[chunk_index]));
+                unkn_encoder.set_data(&((*src_file).get_chunk(chunk_index)));
             }
 
             ++chunk_index;
@@ -1075,4 +1075,3 @@ MIDI_Element_Encoder::STATUS MIDI_File_Encoder::set_data(MIDI_Element* data)
     return STATUS::SUCCESS;
 
 }
-

@@ -338,6 +338,7 @@ protected:
                     STATE                   current_state{STATE::CHUNK_TYPE};
                     STATUS                  current_status{STATUS::STANDBY};
 
+                    uint32_t                expected_tracks{0};
                     size_t                  track_index{0};
 
 public:
