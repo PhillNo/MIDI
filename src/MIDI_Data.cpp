@@ -1,11 +1,55 @@
 #include "MIDI_Data.h"
 
 /* ****************************************************************************
+*  Varlen
+*  ************************************************************************* */
+int Varlen::byte_count(uint32_t vlq)
+{
+    int count = 1;
+
+    if (vlq > 2097151)
+    {
+        count  = 4;
+    }
+    else if (vlq > 16383)
+    {
+        count = 3;
+    }
+    else if (vlq > 127)
+    {
+        count = 2;
+    }
+
+    return count;
+}
+
+int Varlen::byte_count()
+{
+    return byte_count(payload);
+}
+
+/* ****************************************************************************
 *  MTrk_Event
 *  ************************************************************************* */
 void MTrk_Event::set_dt(uint32_t new_dt)
 {
     dt.set_data(new_dt);
+}
+
+uint32_t MTrk_Event::get_size()
+{
+    uint32_t size{0};
+
+    size += dt.byte_count();
+    size += get_payload_size();
+
+    if ((bytes[0] == STATUS_BYTE::SYSEX_F0) || (bytes[0] == STATUS_BYTE::SYSEX_F7))
+    {
+        size += Varlen::byte_count(get_payload_size());
+    }
+
+    return size;
+
 }
 
 void MTrk_Event::push_byte(uint8_t new_byte)
@@ -100,9 +144,82 @@ MTrk_Chunk::MTrk_Chunk()
     header = CHUNK_HEADER::MTRK;
 }
 
-void MTrk_Chunk::emplace_event()
+uint32_t MTrk_Chunk::update_chunk_size()
 {
-    events.emplace_back();
+    uint32_t size = 0;
+    auto it = events.begin();
+
+    while(it != events.end())
+    {
+        size += (*it).get_size();
+
+        ++it;
+    }
+
+    return size;
+
+}
+
+MTrk_Event& MTrk_Chunk::emplace_back_event()
+{
+    return events.emplace_back();
+}
+
+MTrk_Event& MTrk_Chunk::emplace_event(size_t index)
+{
+    auto it = events.begin();
+
+    for (size_t i = 0; i < index; ++i)
+    {
+        if (it == events.end())
+        {
+            return *events.end();
+        }
+        else
+        {
+            ++it;
+        }
+    }
+
+    return *events.emplace(it);
+}
+
+MTrk_Event& MTrk_Chunk::insert_event(size_t index, MTrk_Event& event)
+{
+    auto it = events.begin();
+
+    for (size_t i = 0; i < index; ++i)
+    {
+        if (it == events.end())
+        {
+            return *events.end();
+        }
+        else
+        {
+            ++it;
+        }
+    }
+
+    return *events.insert(it, event);
+}
+
+void MTrk_Chunk::erase(size_t index)
+{
+    auto it = events.begin();
+
+    for (size_t i = 0; i < index; ++i)
+    {
+        if (it == events.end())
+        {
+            break;
+        }
+        else
+        {
+            ++it;
+        }
+    }
+
+    events.erase(it);
 }
 
 MTrk_Event& MTrk_Chunk::back()
@@ -356,23 +473,30 @@ MThd_Chunk& MIDI_File::get_hdr()
 
 MIDI_Chunk& MIDI_File::get_chunk(size_t index)
 {
-    auto i = ordered_chunks.begin();
-    auto e = ordered_chunks.end();
-
-    for (size_t x = 0; x < index; ++x)
-    {
-        if (i == e)
-        {
-            return *(*e);
-        }
-        i++;
-    }
-
-    return *(*i);
+    return *(ordered_chunks[index]);
 }
 
-MIDI_Chunk& MIDI_File::operator[](size_t index)
+MTrk_Chunk& MIDI_File::get_MTrk(size_t index)
 {
-    return get_chunk(index);
+    auto it = mtrk_chunks.begin();
+
+    for (size_t i = 0; i < index; ++i)
+    {
+        if (it == mtrk_chunks.end())
+        {
+            return *it;
+        }
+        else
+        {
+            ++it;
+        }
+    }
+
+    return *it;
+}
+
+MTrk_Chunk& MIDI_File::operator[](size_t index)
+{
+    return get_MTrk(index);
 }
 

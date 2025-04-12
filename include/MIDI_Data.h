@@ -72,10 +72,12 @@ class Varlen :                              public MIDI_Element
 protected:
                     uint32_t                payload{0};
 public:
-        inline      void                    set_data(uint32_t new_payload){ payload = new_payload; }
-        inline      uint32_t                get_data(){ return payload; };
+    inline          void                    set_data(uint32_t new_payload){ payload = new_payload; }
+    // void set_data(uint8_t, uint8_t, uint8_t, uint8_t);
+    inline          uint32_t                get_data(){ return payload; };
+    static          int                     byte_count(uint32_t vlq);
+                    int                     byte_count();
 };
-
 
 /* ****************************************************************************
 *  MTrk_Event
@@ -88,7 +90,8 @@ protected:
 public:
                     void                    set_dt(uint32_t new_dt);
     inline          uint32_t                get_dt() { return dt.get_data(); }
-    inline          uint32_t                get_size() { return static_cast<uint32_t>(bytes.size()); }
+                    uint32_t                get_size();
+    inline          uint32_t                get_payload_size() { return static_cast<uint32_t>(bytes.size()); }
                     void                    push_byte(uint8_t new_byte);
                     uint8_t                 operator[](size_t index);
 };
@@ -143,10 +146,16 @@ class MTrk_Chunk :                          public MIDI_Chunk
 {
 protected:
                     std::list<MTrk_Event>   events{};
+                    uint32_t                update_chunk_size();
 public:
                                             MTrk_Chunk();
 
-                    void                    emplace_event();
+                    // TODO: Update chunk size
+                    MTrk_Event&             emplace_back_event();
+                    MTrk_Event&             emplace_event(size_t index);
+                    MTrk_Event&             insert_event(size_t index, MTrk_Event& event);
+                    void                    erase(size_t index);
+
                     MTrk_Event&             back();
                     MTrk_Event&             front();
             inline  size_t                  size(){ return events.size(); }
@@ -190,7 +199,7 @@ are still exposed through getters.
 
 protected:
                     MThd_Chunk              hdr{};
-                    std::list<MIDI_Chunk*>  ordered_chunks{}; // pointers in vector cannot be const because vectors copy
+                    std::vector<MIDI_Chunk*>  ordered_chunks{}; // pointers in vector cannot be const because vectors copy
                     std::list<MTrk_Chunk>   mtrk_chunks{}; // could be vectors but pushing back
                     std::list<UNkn_Chunk>   unkn_chunks{}; // can cause moves and pointers in `ordered_chunks` would need to be reset.
 public:
@@ -212,7 +221,8 @@ public:
                     
                     MThd_Chunk&             get_hdr();
                     MIDI_Chunk&             get_chunk(size_t index);
-                    MIDI_Chunk&             operator[](size_t index);
+                    MTrk_Chunk&             get_MTrk(size_t index);
+                    MTrk_Chunk&             operator[](size_t index);
 };
 
 #endif
