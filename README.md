@@ -75,6 +75,8 @@ The `MIDI_File_Encoder` object is the inverse of the decoder and has an analogou
 Again, the encoder objects do not correspond to each MIDI data type (i.e. Sysex length is implicit in the length of `bytes` but the length must be explicitly encoded in a file, though not sent to devices during a performance).
 
 ## Tests
-Tests are currently performed by decoding a MIDI file to a `MIDI_File` object, encoding the `MIDI_File` object, and comparing byte-for-byte the input MIDI file and the encoded output. Running `make tests` will run the test against all .mid file cases in `extras/MIDI_files`.
+Test are handled by a bash script for each test case. `make tests` will run each script immediately under `extras/jobs`. Scripts will return the string `pass` or `fail`, with more detailed test results stored in `extras/jobs/results/` as well as encoded MIDI files, if any, in `extras/jobs/encoded_files`.
+
+Most tests work by decoding a file, encoding it again, and comparing byte-for-byte the input and output. In cases where MIDI file contents are edited, an input and separate expected output file are necessary.
 
 .hex files in `extras/MIDI_files` are modified by hand and converted to the .mid files representing each test case.
