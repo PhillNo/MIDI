@@ -568,7 +568,7 @@ MIDI_Element_Decoder::STATUS MTrk_Events_Decoder::decode_byte(uint8_t next_byte,
                 }
                 case STATUS::SUCCESS:
                 {
-                    product.emplace_event();
+                    product.emplace_back_event();
                     product.back().set_dt(varlen_decoder.get());
                     current_state = STATE::MESSAGE_TYPE;
                     break;
@@ -1392,7 +1392,7 @@ MIDI_Element_Decoder::STATUS MIDI_File_Decoder::decode_byte(uint8_t next_byte, M
         }
         case STATE::UNKN:
         {
-            current_status = unkn_decoder.decode_byte(next_byte, &(static_cast<UNkn_Chunk &>(product[track_index])));
+            current_status = unkn_decoder.decode_byte(next_byte, &(static_cast<UNkn_Chunk &>(product.get_chunk(track_index))));
 
             switch (current_status)
             {

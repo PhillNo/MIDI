@@ -165,19 +165,19 @@ MIDI_Element_Encoder::STATUS MIDI_Message_Encoder::encode_byte(uint8_t& product)
         }
         case STATE::PAYLOAD:
         {
-            if (specific_index < src_event->get_size())
+            if (specific_index < src_event->get_payload_size())
             {
                 product = (*src_event)[specific_index];
                 ++specific_index;
             }
 
-            if (specific_index == src_event->get_size())
+            if (specific_index == src_event->get_payload_size())
             {
                 current_state = STATE::DONE;
                 return STATUS::SUCCESS;
             }
 
-            if (specific_index > src_event->get_size())
+            if (specific_index > src_event->get_payload_size())
             {
                 current_state = STATE::FAIL;
                 return STATUS::FAIL;
@@ -217,7 +217,7 @@ MIDI_Element_Encoder::STATUS MIDI_Message_Encoder::set_data(MIDI_Element* data)
 
 void MIDI_Message_Encoder::skip_status()
 {
-    if ((specific_index == 0) && (src_event->get_size() > 1))
+    if ((specific_index == 0) && (src_event->get_payload_size() > 1))
     {
         specific_index = 1;
     }
@@ -266,19 +266,19 @@ MIDI_Element_Encoder::STATUS Meta_Message_Encoder::encode_byte(uint8_t& product)
         }
         case STATE::PAYLOAD:
         {
-            if (specific_index < src_event->get_size())
+            if (specific_index < src_event->get_payload_size())
             {
                 product = (*src_event)[specific_index];
                 ++specific_index;
             }
 
-            if (specific_index == src_event->get_size())
+            if (specific_index == src_event->get_payload_size())
             {
                 current_state = STATE::DONE;
                 return STATUS::SUCCESS;
             }
 
-            if (specific_index > src_event->get_size())
+            if (specific_index > src_event->get_payload_size())
             {
                 current_state = STATE::FAIL;
                 return STATUS::FAIL;
@@ -406,12 +406,12 @@ MIDI_Element_Encoder::STATUS Sysex_Message_Encoder::encode_byte(uint8_t& product
         }
         case STATE::PAYLOAD:
         {
-            if (specific_index < src_event->get_size())
+            if (specific_index < src_event->get_payload_size())
             {
                 product = (*src_event)[specific_index];
                 ++specific_index;
 
-                if (specific_index == src_event->get_size())
+                if (specific_index == src_event->get_payload_size())
                 {
                     current_state = STATE::DONE;
                     return STATUS::SUCCESS;
@@ -451,7 +451,7 @@ MIDI_Element_Encoder::STATUS Sysex_Message_Encoder::set_data(MIDI_Element* data)
     src = data;
     src_event = static_cast<MTrk_Event*>(src);
     dt_encoder.set_data(src_event->get_dt());
-    len_encoder.set_data(src_event->get_size() - 1); // len is byte count AFTER F0/F7
+    len_encoder.set_data(src_event->get_payload_size() - 1); // len is byte count AFTER F0/F7
 
     return STATUS::SUCCESS;
 }
