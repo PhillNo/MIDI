@@ -144,17 +144,19 @@ public:
 *  ************************************************************************* */
 class MTrk_Chunk :                          public MIDI_Chunk
 {
+friend class MTrk_Editor;
+
 protected:
                     std::list<MTrk_Event>   events{};
-                    uint32_t                update_chunk_size();
 public:
                                             MTrk_Chunk();
 
-                    // TODO: Update chunk size
                     MTrk_Event&             emplace_back_event();
+                    /*
                     MTrk_Event&             emplace_event(size_t index);
                     MTrk_Event&             insert_event(size_t index, MTrk_Event& event);
                     void                    erase(size_t index);
+                    */
 
                     MTrk_Event&             back();
                     MTrk_Event&             front();
@@ -162,6 +164,7 @@ public:
                     std::list<MTrk_Event>::iterator begin();
                     std::list<MTrk_Event>::iterator end();
                     MTrk_Event&             operator[](size_t index);
+                    uint32_t                update_chunk_size();
 };
 
 /* ****************************************************************************

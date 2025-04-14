@@ -945,6 +945,8 @@ MIDI_Element_Decoder::STATUS MTrk_Chunk_Decoder::decode_byte(uint8_t next_byte, 
 
                     current_state = STATE::DONE;
 
+                    product.update_chunk_size();
+
                     return STATUS::SUCCESS;
 
                     break;
