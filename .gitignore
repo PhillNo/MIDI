@@ -7,3 +7,13 @@ extras/MIDI_files/encoded.mid
 extras/encoded_files/
 extras/decode_reencode
 extras/decode_reencode
+extras/jobs/encoded_files/bad_sysex.mid
+extras/jobs/encoded_files/basic_sysex.mid
+extras/jobs/encoded_files/extended_MThd.mid
+extras/jobs/encoded_files/escape_sysex.mid
+extras/jobs/encoded_files/MIDI_sample.mid
+extras/jobs/encoded_files/MIDI_w_extended_MThd.mid
+extras/jobs/encoded_files/no_track.mid
+extras/jobs/encoded_files/sample.mid
+extras/jobs/encoded_files/sample_UNkn_chunks.mid
+extras/jobs/results/sample.txt
