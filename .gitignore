@@ -6,4 +6,5 @@ extras/tests.txt
 extras/MIDI_files/encoded.mid
 extras/encoded_files/
 extras/decode_reencode
-extras/decode_reencode
+extras/jobs/encoded_files/
+extras/jobs/results/
