@@ -166,11 +166,12 @@ uint32_t MTrk_Chunk::update_chunk_size()
 
 MTrk_Event& MTrk_Chunk::emplace_back_event()
 {
-    auto tmp = events.emplace_back();
-    update_chunk_size();
+    MTrk_Event& tmp = events.emplace_back();
+    // do not update chunk size here (payload has not been set)
     return tmp;
 }
 
+/*
 MTrk_Event& MTrk_Chunk::emplace_event(size_t index)
 {
     auto it = events.begin();
@@ -232,6 +233,7 @@ void MTrk_Chunk::erase(size_t index)
     events.erase(it);
     update_chunk_size();
 }
+*/
 
 MTrk_Event& MTrk_Chunk::back()
 {
